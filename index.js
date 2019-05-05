@@ -7,23 +7,23 @@ const app = express()
 
 const influx = new Influx.InfluxDB({
   host: "68.183.198.16",
-  database: "telegraf",
-  schema: [
-    {
-      measurement: "response_times",
-      fields: {
-        path: Influx.FieldType.STRING,
-        duration: Influx.FieldType.INTEGER
-      },
-      tags: ["host"]
-    }
-  ]
+  database: "telegraf"
+  // schema: [
+  //   {
+  //     measurement: "response_times",
+  //     fields: {
+  //       path: Influx.FieldType.STRING,
+  //       duration: Influx.FieldType.INTEGER
+  //     },
+  //     tags: ["host"]
+  //   }
+  // ]
 })
 
 influx
   .getDatabaseNames()
   .then(names => {
-    console.log("NAMES", names)
+    console.log("Existing Databases", names)
     if (!names.includes("telegraf")) {
       return influx.createDatabase("telegraf")
     }
@@ -44,17 +44,17 @@ app.use((req, res, next) => {
     const duration = Date.now() - start
     console.log(`Request to ${req.path} took ${duration}ms`)
 
-    influx
-      .writePoints([
-        {
-          measurement: "b",
-          tags: { host: os.hostname() },
-          fields: { duration, path: req.path }
-        }
-      ])
-      .catch(err => {
-        console.error(`Error saving data to InfluxDB! ${err.stack}`)
-      })
+    // influx
+    //   .writePoints([
+    //     {
+    //       measurement: "b",
+    //       tags: { host: os.hostname() },
+    //       fields: { duration, path: req.path }
+    //     }
+    //   ])
+    //   .catch(err => {
+    //     console.error(`Error saving data to InfluxDB! ${err.stack}`)
+    //   })
   })
   return next()
 })
